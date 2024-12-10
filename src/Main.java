@@ -18,40 +18,44 @@ public class Main {
 
         boolean wl = true;
 
-        while (wl) {
-            System.out.println(" ");
-            System.out.println("1 - Cadastrar Usuário");
-            System.out.println("2 - Listar todos usuários cadastrados");
-            System.out.println("3 - Cadastrar nova pergunta no formulário");
-            System.out.println("4 - Deletar pergunta do formulário");
-            System.out.println("5 - Pesquisar usuário por nome / idade / email");
-            System.out.println("0 - Encerrar");
+        try {
+            while (wl) {
+                System.out.println(" ");
+                System.out.println("1 - Cadastrar Usuário");
+                System.out.println("2 - Listar todos usuários cadastrados");
+                System.out.println("3 - Cadastrar nova pergunta no formulário");
+                System.out.println("4 - Deletar pergunta do formulário");
+                System.out.println("5 - Pesquisar usuário por nome / idade / email");
+                System.out.println("0 - Encerrar");
 
-            int opcao = scan.nextInt();
-            switch (opcao) {
-                case 1:
-                    cadastrarUsuario(pasta);
-                    break;
-                case 2:
-                    listarUsuarios(pasta);
-                    break;
-                case 3:
-                    adicionarPergunta();
-                    break;
-                case 4:
-                    deletarPergunta();
-                    break;
-                case 5:
-                    buscarUsuario(pasta);
-                    break;
-                case 0:
-                    System.out.println("\nEncerrando...");
-                    wl = false;
-                    break;
-                default:
-                    System.out.print("\nSelecione uma opção válida!");
-                    break;
+                int opcao = scan.nextInt();
+                switch (opcao) {
+                    case 1:
+                        cadastrarUsuario(pasta);
+                        break;
+                    case 2:
+                        listarUsuarios(pasta);
+                        break;
+                    case 3:
+                        adicionarPergunta();
+                        break;
+                    case 4:
+                        deletarPergunta();
+                        break;
+                    case 5:
+                        buscarUsuario(pasta);
+                        break;
+                    case 0:
+                        System.out.println("\nEncerrando...");
+                        wl = false;
+                        break;
+                    default:
+                        System.out.print("\nSelecione uma opção válida!");
+                        break;
+                }
             }
+        } catch (InputMismatchException e) {
+            System.out.println("Opção inválida!");
         }
         scan.close();
     }
@@ -74,10 +78,13 @@ public class Main {
 
         // Validação do nome de usuário:
         try {
-            if (respostas.get(0).length() >= 10 && respostas.get(0).matches("^[A-Za-zÀ-ÖØ-öø-ÿ'’´`\\s-]+$")) {
+            String rn = respostas.get(0);
+            if (rn.length() >= 10 && rn.matches("^[A-Za-zÀ-ÖØ-öø-ÿ'’´`\\s-]+$")) {
                 usuario.setNome(respostas.get(0));
             } else {
                 System.out.println("\nO nome de usuário deve conter no mínimo 10 caracteres e não pode conter caracteres especiais!");
+                usuario.setNome(respostas.get(0));
+                System.out.println(usuario.getNome());
                 return;
             }
         } catch (NullPointerException e) {
@@ -104,7 +111,8 @@ public class Main {
         }
 
         try {
-            if (respostas.get(1).contains("@")) {
+            String rm = respostas.get(1);
+            if (rm.contains("@") && rm.contains(".")) {
                 usuario.setEmail(respostas.get(1));
             } else {
                 System.out.println("\nO e-mail informado é inválido!");
@@ -121,8 +129,9 @@ public class Main {
             } else {
                 System.out.println("\nO usuário deve ter uma idade válida!");
             }
-        } catch (NullPointerException e) {
-            System.out.println("\nA idade do usuário não pode ser nula!");
+        } catch (NumberFormatException e) {
+            System.out.println("\nCampo idade deve conter apenas números!");
+            return;
         }
 
         // Validação da altura do usuário:
@@ -130,10 +139,10 @@ public class Main {
             if (respostas.get(3).contains(".")) {
                 usuario.setAltura(Float.parseFloat(respostas.get(3).replace(".", ",")));
             } else {
-                usuario.setIdade(Integer.parseInt(respostas.get(2)));
+                usuario.setAltura(Float.parseFloat(respostas.get(3)));
             }
-        } catch (NullPointerException e) {
-            System.out.println("\nA altura do usuário não pode ser nula!");
+        } catch (NumberFormatException e) {
+            e.fillInStackTrace();
         }
 
         String nomeArq = GerarNomeArq.gerarNomeArquivo(pasta, usuario.getNome());
@@ -255,6 +264,7 @@ public class Main {
                         pw.println(pergunta);
                     }
                     pw.flush();
+                    e.fillInStackTrace();
                 }
                 System.out.println("\nPergunta deletada com sucesso!");
             } else if (indicePergunta >= 1 && indicePergunta <= 4) {
@@ -272,26 +282,30 @@ public class Main {
         File[] arquivos = pasta.listFiles();
         Scanner scan = new Scanner(System.in);
 
-        System.out.println("\ndomain.Buscar usuário por:");
-        System.out.println("1 - Nome");
-        System.out.println("2 - Idade");
-        System.out.println("3 - E-mail");
-        int opcao = scan.nextInt();
+        try {
+            System.out.println("\nBuscar usuário por:");
+            System.out.println("1 - Nome");
+            System.out.println("2 - Idade");
+            System.out.println("3 - E-mail");
+            int opcao = scan.nextInt();
 
-        if (arquivos != null) {
-            switch (opcao) {
-                case 1:
-                    Buscar.buscarNome(pasta);
-                    break;
-                case 2:
-                    Buscar.buscarIdade(pasta);
-                    break;
-                case 3:
-                    Buscar.buscarEmail(pasta);
-                    break;
+            if (arquivos != null) {
+                switch (opcao) {
+                    case 1:
+                        Buscar.buscarNome(pasta);
+                        break;
+                    case 2:
+                        Buscar.buscarIdade(pasta);
+                        break;
+                    case 3:
+                        Buscar.buscarEmail(pasta);
+                        break;
+                }
+            } else {
+                System.out.println("\nNão existem usuários cadastrados!");
             }
-        } else {
-            System.out.println("\nNão existem usuários cadastrados!");
+        } catch (InputMismatchException e) {
+            System.out.println("Opção inválida!");
         }
     }
 }
