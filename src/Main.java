@@ -3,7 +3,6 @@ import domain.*;
 import java.io.*;
 import java.util.*;
 
-
 public class Main {
     public static void main(String[] args) throws IOException {
 
@@ -76,6 +75,12 @@ public class Main {
             respostas.add(scan.nextLine().strip());
         }
 
+        if (pasta == null) {
+            usuario.setId(1);
+        } else {
+            usuario.setId(arquivos.length + 1);
+        }
+
         // Validação do nome de usuário:
         try {
             String rn = respostas.get(0);
@@ -128,6 +133,7 @@ public class Main {
                 usuario.setIdade(Integer.parseInt(respostas.get(2)));
             } else {
                 System.out.println("\nO usuário deve ter uma idade válida!");
+                return;
             }
         } catch (NumberFormatException e) {
             System.out.println("\nCampo idade deve conter apenas números!");
@@ -145,7 +151,7 @@ public class Main {
             e.fillInStackTrace();
         }
 
-        String nomeArq = GerarNomeArq.gerarNomeArquivo(pasta, usuario.getNome());
+        String nomeArq = GerarNomeArq.gerarNomeArquivo(pasta, usuario.getNome(), usuario.getId());
         File file = new File(pasta, nomeArq);
         try (PrintWriter pw = new PrintWriter(file)) {
             for (String resposta : respostas) {
@@ -160,14 +166,13 @@ public class Main {
 
     public static void listarUsuarios(File pasta) {
 
-        File[] arquivos = pasta.listFiles(); // Lista os arquivos na pasta
+        File[] arquivos = pasta.listFiles();
 
         if (arquivos == null || arquivos.length == 0) {
             System.out.println("\nNão existem usuários cadastrados na pasta: " + pasta.getAbsolutePath());
             return;
         }
 
-        //Ordena corretamente os arquivos para exibição:
         Arrays.sort(arquivos, (f1, f2) -> {
             int num1 = ExtrairNumero.extrairNumero(f1.getName());
             int num2 = ExtrairNumero.extrairNumero(f2.getName());
@@ -176,28 +181,12 @@ public class Main {
 
         System.out.println("\nExibindo lista de usuários cadastrados:");
 
-        int i = 0;
-
-        for (File arquivo : arquivos) {
-            if (arquivo.isFile()) {
-                try (BufferedReader br = new BufferedReader(new FileReader(arquivo))) {
-                    String linha = br.readLine();
-                    if (linha != null) {
-                        i++;
-                        System.out.println(i + " - " + linha);
-                    } else {
-                        System.out.println("\nArquivo vazio: " + arquivo.getName());
-                    }
-                } catch (IOException e) {
-                    System.err.println("\nErro ao ler o arquivo " + arquivo.getName() + ": " + e.getMessage());
-                }
-            } else {
-                System.out.println("\nIgnorando não-arquivo: " + arquivo.getName());
-            }
-        }
-
-        if (i == 0) {
-            System.out.println("\nNão há usuários cadastrados.");
+        List<File> userList = new ArrayList<>(List.of(arquivos));
+        for (File arquivo : userList) {
+            String arq = arquivo.toString();
+            arq = arq.replaceAll(".*\\\\", "");
+            arq = arq.replaceAll("[\\[\\]]", "");
+            System.out.println(arq);
         }
     }
 

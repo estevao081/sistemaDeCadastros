@@ -5,6 +5,8 @@ public class Usuario {
     String email;
     int idade;
     float altura;
+    int id;
+
 
     public Usuario() {
 
@@ -28,5 +30,13 @@ public class Usuario {
 
     public void setAltura(float altura) {
         this.altura = altura;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
