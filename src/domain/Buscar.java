@@ -35,7 +35,6 @@ public class Buscar {
                     System.out.println("\nUsuário não encontrado!");
                 }
             }
-
         } else {
             System.out.println("\nNão existem usuários cadastrados!");
         }

@@ -1,6 +1,7 @@
 import domain.*;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Main {
@@ -54,14 +55,14 @@ public class Main {
                 }
             }
         } catch (InputMismatchException e) {
-            System.out.println("Opção inválida!");
+            System.out.println("\nOpção inválida!");
         }
         scan.close();
     }
 
     public static void cadastrarUsuario(File pasta) {
 
-        Scanner scan = new Scanner(System.in, "UTF-8");
+        Scanner scan = new Scanner(System.in, StandardCharsets.UTF_8);
         Leitor leitorArquivo = new Leitor();
         Usuario usuario = new Usuario();
 
@@ -75,7 +76,7 @@ public class Main {
             respostas.add(scan.nextLine().strip());
         }
 
-        if (pasta == null) {
+        if (arquivos == null || arquivos.length == 0) {
             usuario.setId(1);
         } else {
             usuario.setId(arquivos.length + 1);
@@ -83,13 +84,11 @@ public class Main {
 
         // Validação do nome de usuário:
         try {
-            String rn = respostas.get(0);
-            if (rn.length() >= 10 && rn.matches("^[A-Za-zÀ-ÖØ-öø-ÿ'’´`\\s-]+$")) {
-                usuario.setNome(respostas.get(0));
+            String nome = respostas.getFirst();
+            if (nome.length() >= 10 && nome.matches("^[A-Za-zÀ-ÖØ-öø-ÿ'’´`\\s-]+$")) {
+                usuario.setNome(respostas.getFirst());
             } else {
                 System.out.println("\nO nome de usuário deve conter no mínimo 10 caracteres e não pode conter caracteres especiais!");
-                usuario.setNome(respostas.get(0));
-                System.out.println(usuario.getNome());
                 return;
             }
         } catch (NullPointerException e) {
@@ -142,13 +141,12 @@ public class Main {
 
         // Validação da altura do usuário:
         try {
-            if (respostas.get(3).contains(".")) {
-                usuario.setAltura(Float.parseFloat(respostas.get(3).replace(".", ",")));
-            } else {
-                usuario.setAltura(Float.parseFloat(respostas.get(3)));
+            if(respostas.get(3).contains(".")){
+                usuario.setAltura(Double.parseDouble(respostas.get(3).replace(".", ",")));
             }
         } catch (NumberFormatException e) {
-            e.fillInStackTrace();
+            System.out.println("\nFormato inválido!");
+            return;
         }
 
         String nomeArq = GerarNomeArq.gerarNomeArquivo(pasta, usuario.getNome(), usuario.getId());
@@ -170,23 +168,22 @@ public class Main {
 
         if (arquivos == null || arquivos.length == 0) {
             System.out.println("\nNão existem usuários cadastrados na pasta: " + pasta.getAbsolutePath());
-            return;
-        }
+        } else {
+            Arrays.sort(arquivos, (f1, f2) -> {
+                int num1 = ExtrairNumero.extrairNumero(f1.getName());
+                int num2 = ExtrairNumero.extrairNumero(f2.getName());
+                return Integer.compare(num1, num2);
+            });
 
-        Arrays.sort(arquivos, (f1, f2) -> {
-            int num1 = ExtrairNumero.extrairNumero(f1.getName());
-            int num2 = ExtrairNumero.extrairNumero(f2.getName());
-            return Integer.compare(num1, num2);
-        });
+            System.out.println("\nExibindo lista de usuários cadastrados:");
 
-        System.out.println("\nExibindo lista de usuários cadastrados:");
-
-        List<File> userList = new ArrayList<>(List.of(arquivos));
-        for (File arquivo : userList) {
-            String arq = arquivo.toString();
-            arq = arq.replaceAll(".*\\\\", "");
-            arq = arq.replaceAll("[\\[\\]]", "");
-            System.out.println(arq);
+            List<File> userList = new ArrayList<>(List.of(arquivos));
+            for (File arquivo : userList) {
+                String arq = arquivo.toString();
+                arq = arq.replaceAll(".*\\\\", "");
+                arq = arq.replaceAll("[\\[\\]]", "");
+                System.out.println(arq);
+            }
         }
     }
 
@@ -220,7 +217,6 @@ public class Main {
             }
             pw.flush();
         }
-
         System.out.println("\nPergunta adicionada ao formulário com sucesso!");
     }
 
@@ -253,7 +249,7 @@ public class Main {
                         pw.println(pergunta);
                     }
                     pw.flush();
-                    e.fillInStackTrace();
+                    e.printStackTrace();
                 }
                 System.out.println("\nPergunta deletada com sucesso!");
             } else if (indicePergunta >= 1 && indicePergunta <= 4) {

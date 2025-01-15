@@ -22,10 +22,9 @@ public class Leitor {
                     listaDePerguntas.add(linhaAserLida);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                e.fillInStackTrace();
             }
         } else {
-
             //Para rodar no terminal:
             arquivo = new File("form/formulario.txt");
             try {
@@ -35,7 +34,7 @@ public class Leitor {
                     listaDePerguntas.add(linhaAserLida);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                e.fillInStackTrace();
             }
         }
         return listaDePerguntas;

@@ -4,9 +4,8 @@ public class Usuario {
     String nome;
     String email;
     int idade;
-    float altura;
+    double altura;
     int id;
-
 
     public Usuario() {
 
@@ -28,7 +27,7 @@ public class Usuario {
         this.idade = idade;
     }
 
-    public void setAltura(float altura) {
+    public void setAltura(double altura) {
         this.altura = altura;
     }
 
